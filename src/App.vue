@@ -1,30 +1,39 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div>
+    <tools-view />
+    <div class="flex-row">
+      <objects-view />
+      <canvas-view />
+      <properties-view />
+    </div>
   </div>
-  <router-view />
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+import ToolsView from "@/views/toolbar/toolbar.view.vue";
+import ObjectsView from "@/views/panels/objects/objects.view.vue";
+import CanvasView from "@/views/canvas.view.vue";
+import PropertiesView from "@/views/panels/properties/properties.view.vue";
+import { graphxModule } from "./store/graphx.vuex";
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+@Options({
+  name: "App",
+  components: { ToolsView, ObjectsView, CanvasView, PropertiesView },
+})
+export default class App extends Vue {
+  created(): void {
+    graphxModule.init();
   }
+}
+</script>
+
+<style lang="scss">
+@import "@/scss/style.scss";
+#app {
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
 }
 </style>

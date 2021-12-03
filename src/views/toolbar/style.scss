@@ -1,0 +1,84 @@
+$tb-hover: #1f1f1f;
+
+.tb-btn {
+	height: $tools-height;
+	min-width: $tools-height;
+	padding: 0 8px;
+
+	&:hover {
+		background: $tb-hover;
+	}
+
+	> i,
+	svg {
+		color: #fff;
+	}
+}
+
+.open-menu {
+	background: $tb-hover;
+}
+
+.selected-btn {
+	background: $color-primary;
+	transition: none;
+
+	&:hover {
+		background: $color-primary;
+	}
+}
+
+.menu-trigger-btn {
+	color: #fff;
+	font-size: 12px;
+	> .chev-down {
+		background: transparent;
+		height: 40px;
+		transition: padding 100ms linear;
+
+		&.open {
+			padding-top: 6px;
+			height: 20px;
+		}
+	}
+
+	&:hover {
+		> .chev-down {
+			padding-top: 6px;
+		}
+	}
+}
+
+.tb-menu-wrapper {
+	position: relative;
+}
+
+.tb-menu {
+	position: absolute;
+	top: 45px;
+	background: #383838;
+	color: #fff;
+	font-size: 12px;
+
+	-webkit-box-shadow: 0px 0px 9px 0px #000000;
+	box-shadow: 0px 0px 9px 0px #000000;
+
+	li {
+		width: 160px;
+
+		&:hover {
+			background: $color-primary;
+		}
+
+		> button {
+			color: #fff;
+			font-size: 12px;
+			width: 100%;
+			text-align: left;
+			padding: 0 12px;
+			height: 30px;
+
+			width: 100%;
+		}
+	}
+}

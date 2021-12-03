@@ -1,0 +1,185 @@
+/* #region STYLE RESET */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+button,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box; /* Firefox, other Gecko */
+	box-sizing: border-box; /* Opera/IE 8+ */
+}
+
+body {
+	line-height: 1;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* #endregion STYLE RESET */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import './variables';
+html,
+body {
+	height: 100vh;
+	width: 100vw;
+	padding: 0 !important;
+	margin: 0 !important;
+	overflow: hidden;
+	font-family: 'Open Sans', sans-serif;
+	color: $color-text;
+	user-select: none;
+}
+
+button {
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	user-select: none;
+	padding: 0;
+	margin: 0;
+}
+
+input {
+	font-family: 'Open Sans', sans-serif;
+}
+
+.border {
+	&-r {
+		border-right: 1px solid $color-border;
+	}
+	&-l {
+		border-left: 1px solid $color-border;
+	}
+	&-t {
+		border-top: 1px solid $color-border;
+	}
+	&-b {
+		border-bottom: 1px solid $color-border;
+	}
+}
+
+.flex {
+	&-row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+	&-col {
+		display: flex;
+		flex-direction: column;
+	}
+	&-center {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
+
+.outline {
+	@include outline;
+}
