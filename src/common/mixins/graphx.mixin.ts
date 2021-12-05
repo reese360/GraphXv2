@@ -1,4 +1,4 @@
-import { ShapeModel } from "@/common/models/shapes/Shape.model";
+import { IShape } from "@/common/models/shapes/IShape.interface";
 
 import { ToolInput } from "./../constants/enums/ToolInput.enum";
 import { ShapeInput } from "./../constants/enums/ShapeInput.enum";
@@ -15,7 +15,7 @@ export class GraphxMixin extends Vue {
     return graphxModule.activeTool;
   }
 
-  get shapeCollection(): Map<string, ShapeModel> {
+  get shapeCollection(): Map<string, IShape> {
     return graphxModule.shapeCollection;
   }
 
@@ -35,15 +35,19 @@ export class GraphxMixin extends Vue {
     graphxModule.updateShape(s);
   }
 
-  updateTool(t: ToolInput): void {
+  async updateTool(t: ToolInput): Promise<void> {
     graphxModule.updateTool(t);
   }
 
-  addShape(shape: ShapeModel): void {
+  addShape(shape: IShape): void {
     graphxModule.addShape(shape);
   }
 
-  lookupShape(id: string): ShapeModel | null {
+  deleteShape(id: string): void {
+    graphxModule.deleteShape(id);
+  }
+
+  lookupShape(id: string): IShape | null {
     return graphxModule.lookupShape(id) ?? null;
   }
 }

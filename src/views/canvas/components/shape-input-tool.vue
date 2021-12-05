@@ -40,16 +40,19 @@
 </template>
 
 <script lang="ts">
-import { ShapeModel } from "@/common/models/shapes/Shape.model";
 import { ShapeInput } from "@/common/constants/enums/ShapeInput.enum";
 import { GraphxMixin } from "@/common/mixins/graphx.mixin";
-import { ShapePosition } from "@/common/models/shapes/shapePosition.model";
-import { v4 as uuidv4 } from "uuid";
+import { ShapePosition } from "@/common/models/shapePosition.type";
+import { IShape } from "@/common/models/shapes/IShape.interface";
 import { mixins, Options } from "vue-class-component";
+import { ShapeData } from "@/common/models/shapeData.type";
+import Rectangle from "@/common/models/shapes/rect.shape";
+import Ellipse from "@/common/models/shapes/ellipse.shape";
+import Line from "@/common/models/shapes/line.shape";
+import Polygon from "@/common/models/shapes/polygon.shape";
+import { ToolInput } from "@/common/constants/enums/ToolInput.enum";
 import { eventBus } from "@/proxies/event-bus.proxy";
 import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
-import { ToolInput } from "@/common/constants/enums/ToolInput.enum";
-import * as boundsUtility from "@/utility/shapeBounds.utility";
 
 @Options({
   name: "ShapeInputTool",
@@ -154,39 +157,36 @@ export default class ShapeInputTool extends mixins(GraphxMixin) {
     this.shapePosition = null;
   }
 
+  newShape(shapeData: ShapeData): IShape {
+    if (this.selectedShape == ShapeInput.RECTANGLE)
+      return new Rectangle(shapeData);
+    if (this.selectedShape == ShapeInput.ELLIPSE) return new Ellipse(shapeData);
+    if (this.selectedShape == ShapeInput.LINE) return new Line(shapeData);
+    else return new Polygon(shapeData);
+  }
+
   endDraw(): void {
     if (this.isDrawing) {
-      // build shape object
       if (this.shapePosition && this.calcShapeArea() >= this.areaLimit) {
-        const shape: ShapeModel = {
-          id: uuidv4(),
+        // get shape data settings
+        const shapeData: ShapeData = {
           name: `${this.selectedShape}-${this.shapeCollection.size}`,
-          type: this.selectedShape,
           position:
             this.selectedShape == ShapeInput.POLYGON
               ? this.polygonPoints
               : this.shapePosition!,
-          origin:
-            this.selectedShape == ShapeInput.POLYGON
-              ? this.polygonPoints
-              : { x: this.shapePosition.x1, y: this.shapePosition.y1 },
-          selected: false,
           properties: {
             strokeWidth: this.activeStrokeWidth,
             fill: this.activeFillColor,
             stroke: this.activeStrokeColor,
           },
-          getBounds:
-            this.selectedShape == ShapeInput.RECTANGLE
-              ? boundsUtility.getRectBounds
-              : this.selectedShape == ShapeInput.ELLIPSE
-              ? boundsUtility.getEllipseBounds
-              : this.selectedShape == ShapeInput.LINE
-              ? boundsUtility.getLineBounds
-              : boundsUtility.getPolyBounds,
         };
+        const shape = this.newShape(shapeData);
+        shape.selected = true;
         this.addShape(shape);
-        // this.updateTool(ToolInput.SELECT); // shape will be selected
+        this.updateTool(ToolInput.SELECT).then(() =>
+          eventBus.emit(BusEvent.SELECT, { id: shape.id, multiSelect: false })
+        );
       }
     }
 

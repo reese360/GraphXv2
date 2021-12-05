@@ -1,21 +1,18 @@
-import { ShapeModel } from "@/common/models/shapes/Shape.model";
+import { IShape } from "@/common/models/shapes/IShape.interface";
 import { ToolInput } from "./../common/constants/enums/ToolInput.enum";
 import { ShapeInput } from "./../common/constants/enums/ShapeInput.enum";
 import { Action, Module, VuexModule } from "vuex-class-modules";
-import * as boundsUtility from "@/utility/shapeBounds.utility";
+import Polygon from "@/common/models/shapes/polygon.shape";
 
 @Module({ generateMutationSetters: true })
 class GraphxModule extends VuexModule {
-  private _selectedShape: ShapeInput = ShapeInput.LINE;
+  private _selectedShape: ShapeInput = ShapeInput.RECTANGLE;
   private _activeTool: ToolInput = ToolInput.SELECT;
   private _activeStrokeColor = "#000";
   private _activeStrokeWidth = 1;
-  private _activeFillColor = "none";
+  private _activeFillColor = "#c3f";
 
-  private _shapeCollection: Map<string, ShapeModel> = new Map<
-    string,
-    ShapeModel
-  >();
+  private _shapeCollection: Map<string, IShape> = new Map<string, IShape>();
 
   get selectedShape(): ShapeInput {
     return this._selectedShape;
@@ -25,7 +22,7 @@ class GraphxModule extends VuexModule {
     return this._activeTool;
   }
 
-  get shapeCollection(): Map<string, ShapeModel> {
+  get shapeCollection(): Map<string, IShape> {
     return this._shapeCollection;
   }
 
@@ -42,82 +39,32 @@ class GraphxModule extends VuexModule {
   }
 
   init(): void {
-    const a: ShapeModel = {
-      id: "00000-00000-00000",
-      name: "Rectangle-0",
-      type: ShapeInput.RECTANGLE,
-      selected: false,
-      position: {
-        x1: 50,
-        y1: 50,
-        x2: 200,
-        y2: 200,
-      },
-      origin: { x: 50, y: 50 },
-      properties: {
-        strokeWidth: 10,
-        fill: "#0ca",
-        stroke: "#000",
-      },
-      getBounds: boundsUtility.getRectBounds,
-    };
-    this.addShape(a);
-
-    const b: ShapeModel = {
-      id: "00000-00000-00001",
-      name: "Ellipse-1",
-      type: ShapeInput.ELLIPSE,
-      selected: false,
-      position: {
-        x1: 400,
-        y1: 150,
-        x2: 100,
-        y2: 100,
-      },
-      origin: { x: 400, y: 150 },
-      properties: {
-        strokeWidth: 10,
-        fill: "#9fe",
-        stroke: "#000",
-      },
-      getBounds: boundsUtility.getEllipseBounds,
-    };
-    this.addShape(b);
-
-    const c: ShapeModel = {
-      id: "00000-00000-00002",
-      type: ShapeInput.POLYGON,
-      name: "Polygon-2",
-      selected: false,
-      position: [
-        [669, 44],
-        [558, 256],
-        [781, 256],
-      ],
-      origin: [
-        [669, 44],
-        [558, 256],
-        [781, 256],
-      ],
-      properties: {
-        strokeWidth: 2,
-        fill: "#09f",
-        stroke: "#000",
-      },
-      getBounds: boundsUtility.getEllipseBounds,
-    };
-    this.addShape(c);
+    this.addShape(
+      new Polygon({
+        name: "Polygon-0",
+        position: [
+          [669, 44],
+          [558, 256],
+          [781, 256],
+        ],
+        properties: {
+          strokeWidth: 2,
+          fill: "#09f",
+          stroke: "#000",
+        },
+      })
+    );
   }
 
   @Action updateShape(s: ShapeInput) {
     this._selectedShape = s;
   }
 
-  @Action updateTool(t: ToolInput): void {
+  @Action async updateTool(t: ToolInput): Promise<void> {
     this._activeTool = t;
   }
 
-  @Action addShape(s: ShapeModel): void {
+  @Action async addShape(s: IShape): Promise<void> {
     this._shapeCollection.set(s.id, s);
   }
 
@@ -133,10 +80,15 @@ class GraphxModule extends VuexModule {
     this._activeStrokeColor = color;
   }
 
-  lookupShape(id: string): ShapeModel | null {
+  lookupShape(id: string): IShape | null {
     return this._shapeCollection.get(id) ?? null;
+  }
+
+  deleteShape(id: string): void {
+    this._shapeCollection.delete(id);
   }
 }
 
 import store from "./index";
+import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
 export const graphxModule = new GraphxModule({ store, name: "graphx" });

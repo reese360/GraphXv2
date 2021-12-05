@@ -1,4 +1,4 @@
-import { ShapePosition } from "@/common/models/shapes/shapePosition.model";
+import { ShapePosition } from "@/common/models/shapePosition.type";
 
 const getRectBounds = (position: ShapePosition, sWidth: number) => {
   return {

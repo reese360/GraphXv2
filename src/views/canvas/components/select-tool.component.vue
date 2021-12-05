@@ -13,19 +13,28 @@
     />
 
     <!-- INNER SELECTION BOXES -->
-    <g v-if="!dragOrigin">
-      <rect
-        v-for="(outline, idx) in shapeOutlines"
-        :key="idx"
-        :x="outline.x1"
-        :y="outline.y1"
-        :width="outline.x2"
-        :height="outline.y2"
-        stroke-width="2"
-        stroke="#09f"
-        fill="none"
-      />
-    </g>
+    <rect
+      v-for="(shape, idx) in shapes"
+      :key="idx"
+      :x="shape.x1"
+      :y="shape.y1"
+      :width="shape.x2"
+      :height="shape.y2"
+      stroke-width="1"
+      stroke="#09f"
+      fill="none"
+    />
+    <!-- <rect
+			v-for="(outline, idx) in shapeOutlines"
+			:key="idx"
+			:x="outline.x1"
+			:y="outline.y1"
+			:width="outline.x2"
+			:height="outline.y2"
+			stroke-width="1"
+			stroke="#09f"
+			fill="none"
+		/> -->
     <!-- OUTER SELECTION BOX -->
     <rect
       v-if="selectionOutline"
@@ -44,8 +53,8 @@
 import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
 import { ShapeInput } from "@/common/constants/enums/ShapeInput.enum";
 import { GraphxMixin } from "@/common/mixins/graphx.mixin";
-import { ShapeModel } from "@/common/models/shapes/Shape.model";
-import { ShapePosition } from "@/common/models/shapes/shapePosition.model";
+import { IShape } from "@/common/models/shapes/IShape.interface";
+import { ShapePosition } from "@/common/models/shapePosition.type";
 import { eventBus } from "@/proxies/event-bus.proxy";
 import { mixins, Options } from "vue-class-component";
 
@@ -54,10 +63,7 @@ import { mixins, Options } from "vue-class-component";
   components: {},
 })
 export default class SelectionTool extends mixins(GraphxMixin) {
-  private selectedShapes: Map<
-    string,
-    { shape: ShapeModel; outline: ShapePosition }
-  > = new Map();
+  private selectedShapes: Map<string, IShape> = new Map();
 
   private dragOrigin: { x: number; y: number } | null = null;
   private dragSelect: ShapePosition | null = null;
@@ -78,7 +84,7 @@ export default class SelectionTool extends mixins(GraphxMixin) {
       let w: number | null = null;
 
       this.selectedShapes.forEach((shape) => {
-        const o = shape.outline;
+        const o = shape.bounds;
         x = x ? Math.min(x, o.x1) : o.x1;
         y = y ? Math.min(y, o.y1) : o.y1;
         w = w ? Math.max(w, o.x1 + o.x2) : o.x1 + o.x2;
@@ -95,8 +101,8 @@ export default class SelectionTool extends mixins(GraphxMixin) {
     return null;
   }
 
-  get shapeOutlines(): ShapePosition[] {
-    return Array.from(this.selectedShapes, ([k, v]) => v.outline);
+  get shapes(): ShapePosition[] {
+    return Array.from(this.selectedShapes, ([k, v]) => v.bounds);
   }
 
   created(): void {
@@ -115,78 +121,17 @@ export default class SelectionTool extends mixins(GraphxMixin) {
         else this.resetSelection();
       }
     });
+
+    eventBus.on(BusEvent.DELETE, (eventData: unknown) => {
+      this.deleteSelectedShapes();
+    });
   }
 
-  getShapeOutline(shape: ShapeModel): ShapePosition {
-    const getRectBounds = () => {
-      return {
-        x1:
-          (shape.position as ShapePosition).x1 -
-          Math.ceil(shape.properties!.strokeWidth / 2),
-        y1:
-          (shape.position as ShapePosition).y1 -
-          Math.ceil(shape.properties!.strokeWidth / 2),
-        x2:
-          (shape.position as ShapePosition).x2 + shape.properties!.strokeWidth,
-        y2:
-          (shape.position as ShapePosition).y2 + shape.properties!.strokeWidth,
-      };
-    };
-    if (shape.type == ShapeInput.RECTANGLE) return getRectBounds();
-
-    const getEllipseBounds = () => {
-      return {
-        x1:
-          (shape.position as ShapePosition).x1 -
-          (shape.position as ShapePosition).x2 -
-          Math.ceil(shape.properties!.strokeWidth / 2),
-        y1:
-          (shape.position as ShapePosition).y1 -
-          (shape.position as ShapePosition).y2 -
-          Math.ceil(shape.properties!.strokeWidth / 2),
-        x2:
-          (shape.position as ShapePosition).x2 * 2 +
-          shape.properties!.strokeWidth,
-        y2:
-          (shape.position as ShapePosition).y2 * 2 +
-          shape.properties!.strokeWidth,
-      };
-    };
-
-    if (shape.type == ShapeInput.ELLIPSE) return getEllipseBounds();
-
-    const getPolyBounds = () => {
-      const box = shape.element!.getBoundingClientRect();
-      // TODO - remove hardcoded margins
-      return {
-        x1: box.x - 0.5 - 260 - shape.properties!.strokeWidth,
-        y1: box.y - 0.5 - 40 - shape.properties!.strokeWidth,
-        x2: box.width + shape.properties!.strokeWidth * 2,
-        y2: box.height + shape.properties!.strokeWidth * 2,
-      };
-    };
-    if (shape.type == ShapeInput.POLYGON) return getPolyBounds();
-
-    const getLineBounds = () => {
-      return {
-        x1: (shape.position as ShapePosition).x1,
-        y1: (shape.position as ShapePosition).y1,
-        x2:
-          (shape.position as ShapePosition).x2 -
-          (shape.position as ShapePosition).x1,
-        y2:
-          (shape.position as ShapePosition).y2 -
-          (shape.position as ShapePosition).y1,
-      };
-    };
-    if (shape.type == ShapeInput.LINE) return getLineBounds();
-
-    return {
-      x1: 0,
-      y1: 0,
-      x2: 0,
-      y2: 0,
-    };
+  deleteSelectedShapes(): void {
+    this.selectedShapes.forEach((shape) => {
+      this.deleteShape(shape.id);
+    });
+    this.selectedShapes.clear();
   }
 
   onToolDown(
@@ -195,13 +140,16 @@ export default class SelectionTool extends mixins(GraphxMixin) {
     multiSelect: boolean
   ): void {
     if (targetId) {
-      if (this.selectedShapes.has(targetId)) this.startDrag(pos);
-      else this.select(targetId, multiSelect);
+      if (multiSelect && this.selectedShapes.has(targetId))
+        this.deselect(targetId);
+      else if (!this.selectedShapes.has(targetId))
+        this.select(targetId, multiSelect);
+
+      this.startDrag(pos);
       return;
     }
 
     if (pos) {
-      this.isSelecting = true;
       this.startSelect(pos, multiSelect);
       return;
     }
@@ -235,16 +183,7 @@ export default class SelectionTool extends mixins(GraphxMixin) {
     let dX = pos.x - this.dragOrigin!.x;
     let dY = pos.y - this.dragOrigin!.y;
     this.selectedShapes.forEach((s) => {
-      if (s.shape.type == ShapeInput.POLYGON) {
-        // do polygon shit
-      } else {
-        const shapePos = s.shape.position as ShapePosition;
-        const origin = s.shape.origin as { x: number; y: number };
-        shapePos.x1 = origin.x + dX;
-        shapePos.y1 = origin.y + dY;
-
-        s.outline = this.getShapeOutline(s.shape);
-      }
+      s.dragTo({ x: dX, y: dY });
     });
   }
 
@@ -253,28 +192,14 @@ export default class SelectionTool extends mixins(GraphxMixin) {
     this.isDragging = false;
 
     this.selectedShapes.forEach((s) => {
-      if (s.shape.type == ShapeInput.POLYGON) {
-        // do polygon shit
-      } else {
-        const shapePos = s.shape.position as ShapePosition;
-        const origin = s.shape.origin as { x: number; y: number };
-        origin.x = shapePos.x1;
-        origin.y = shapePos.y1;
-      }
+      s.endDrag();
     });
-
-    if (this.selectedShapes.has("00000-00000-00000")) {
-      this.$log(
-        this.selectedShapes.get("00000-00000-00000")!.shape,
-        this.selectedShapes.get("00000-00000-00000")!.outline
-      );
-    }
   }
 
   startSelect(pos: { x: number; y: number }, multiSelect = false): void {
     if (!multiSelect) this.resetSelection();
-    this.dragOrigin = pos;
     this.isSelecting = true;
+    this.dragOrigin = pos;
   }
 
   selectTo(pos: { x: number; y: number }): void {
@@ -303,23 +228,20 @@ export default class SelectionTool extends mixins(GraphxMixin) {
     if (!this.selectedShapes.has(id)) {
       const shape = this.lookupShape(id)!;
       shape.selected = true;
-      this.selectedShapes.set(id, {
-        shape,
-        outline: this.getShapeOutline(shape),
-      });
+      this.selectedShapes.set(id, shape);
     }
   }
 
   deselect(id: string): void {
-    const sel = this.selectedShapes.get(id);
-    if (sel) {
-      sel.shape.selected = false;
+    const shape = this.selectedShapes.get(id);
+    if (shape) {
+      shape.selected = false;
       this.selectedShapes.delete(id);
     }
   }
 
   resetSelection(): void {
-    this.selectedShapes.forEach((s) => (s.shape.selected = false));
+    this.selectedShapes.forEach((s) => (s.selected = false));
     this.selectedShapes.clear();
     this.dragSelect = null;
   }

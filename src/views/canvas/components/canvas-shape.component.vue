@@ -1,52 +1,49 @@
 <template>
   <rect
-    v-if="shapeData.type == ShapeInput.RECTANGLE"
-    :x="shapeData.position.x1"
-    :y="shapeData.position.y1"
-    :width="shapeData.position.x2"
-    :height="shapeData.position.y2"
-    :stroke-width="shapeData.properties.strokeWidth"
-    :stroke="shapeData.properties.stroke"
-    :fill="shapeData.properties.fill"
+    v-if="shape.type == ShapeInput.RECTANGLE"
+    :x="shape.position.x1"
+    :y="shape.position.y1"
+    :width="shape.position.x2"
+    :height="shape.position.y2"
+    :stroke-width="shape.properties.strokeWidth"
+    :stroke="shape.properties.stroke"
+    :fill="shape.properties.fill"
     :id="id"
-    :class="{ isSelected: shapeData.selected }"
-    :key="shapeData.key"
+    :class="{ isSelected: shape.selected }"
   />
   <ellipse
-    v-else-if="shapeData.type == ShapeInput.ELLIPSE"
-    :cx="shapeData.position.x1"
-    :cy="shapeData.position.y1"
-    :rx="shapeData.position.x2"
-    :ry="shapeData.position.y2"
-    :stroke-width="shapeData.properties.strokeWidth"
-    :stroke="shapeData.properties.stroke"
-    :fill="shapeData.properties.fill"
+    v-else-if="shape.type == ShapeInput.ELLIPSE"
+    :cx="shape.position.x1"
+    :cy="shape.position.y1"
+    :rx="shape.position.x2"
+    :ry="shape.position.y2"
+    :stroke-width="shape.properties.strokeWidth"
+    :stroke="shape.properties.stroke"
+    :fill="shape.properties.fill"
     :id="id"
-    :class="{ isSelected: shapeData.selected }"
-    :key="shapeData.key"
+    :class="{ isSelected: shape.selected }"
   />
   <line
-    v-else-if="shapeData.type == ShapeInput.LINE"
-    :x1="shapeData.position.x1"
-    :y1="shapeData.position.y1"
-    :x2="shapeData.position.x2"
-    :y2="shapeData.position.y2"
-    :stroke-width="shapeData.properties.strokeWidth"
-    :stroke="shapeData.properties.stroke"
-    :fill="shapeData.properties.fill"
+    v-else-if="shape.type == ShapeInput.LINE"
+    :x1="shape.position.x1"
+    :y1="shape.position.y1"
+    :x2="shape.position.x2"
+    :y2="shape.position.y2"
+    :stroke-width="shape.properties.strokeWidth"
+    :stroke="shape.properties.stroke"
+    :fill="shape.properties.fill"
     :id="id"
-    :class="{ isSelected: shapeData.selected }"
-    :key="shapeData.key"
+    :class="{ isSelected: shape.selected }"
   />
   <polygon
-    v-else-if="shapeData.type == ShapeInput.POLYGON"
-    :points="shapeData.position"
-    :stroke-width="shapeData.properties.strokeWidth"
-    :stroke="shapeData.properties.stroke"
-    :fill="shapeData.properties.fill"
+    v-else-if="shape.type == ShapeInput.POLYGON"
+    :points="polyPosition"
+    :stroke-width="shape.properties.strokeWidth"
+    :stroke="shape.properties.stroke"
+    :fill="shape.properties.fill"
     :id="id"
-    :class="{ isSelected: shapeData.selected }"
-    :key="shapeData.key"
+    :class="{ isSelected: shape.selected }"
+    style="stroke-linejoin: round"
   />
 </template>
 
@@ -55,7 +52,7 @@ import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
 import { ShapeInput } from "@/common/constants/enums/ShapeInput.enum";
 import { ToolInput } from "@/common/constants/enums/ToolInput.enum";
 import { GraphxMixin } from "@/common/mixins/graphx.mixin";
-import { ShapeModel } from "@/common/models/shapes/Shape.model";
+import { IShape } from "@/common/models/shapes/IShape.interface";
 import { eventBus } from "@/proxies/event-bus.proxy";
 import { mixins, Options } from "vue-class-component";
 import { Prop } from "vue-property-decorator";
@@ -65,33 +62,32 @@ import { Prop } from "vue-property-decorator";
 })
 export default class CanvasShape extends mixins(GraphxMixin) {
   @Prop() id!: string;
-  shapeData!: ShapeModel;
-  seedKey = this.getRandomInt(); // used to refresh after render
+  shape!: IShape;
 
   ShapeInput = ShapeInput;
 
+  get polyPosition() {
+    return (this.shape.position as [number, number][]).join();
+  }
+
   created(): void {
-    this.shapeData = this.lookupShape(this.id)!;
+    this.shape = this.lookupShape(this.id)!;
+    this.$log(this.id, this.shape);
   }
 
   mounted(): void {
-    this.shapeData.element = this.$el;
+    this.shape.element = this.$el;
     if (this.activeTool == ToolInput.SHAPE)
       eventBus.emit(BusEvent.SELECT, {
-        id: this.shapeData.id,
+        id: this.shape.id,
         multiSelect: false,
       });
-  }
-
-  getRandomInt(): number {
-    return Math.floor(Math.random() * 500);
   }
 }
 </script>
 
 <style scoped lang="scss">
 .isSelected {
-  // outline: 2px solid #09f;
   cursor: move;
 }
 </style>

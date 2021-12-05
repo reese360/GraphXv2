@@ -3,4 +3,5 @@ export enum BusEvent {
   SHAPE_UPDATE = "shape-update",
   SELECT = "select",
   DESELECT = "deselect",
+  DELETE = "delete",
 }

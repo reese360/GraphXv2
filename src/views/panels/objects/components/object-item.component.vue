@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { ShapeModel } from "@/common/models/shapes/Shape.model";
+import { IShape } from "@/common/models/shapes/IShape.interface";
 import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
 import { ShapeInput } from "@/common/constants/enums/ShapeInput.enum";
 import { GraphxMixin } from "@/common/mixins/graphx.mixin";
@@ -37,7 +37,7 @@ import { Prop, Watch } from "vue-property-decorator";
 })
 export default class ObjectItem extends mixins(GraphxMixin) {
   @Prop() itemId!: string;
-  itemData!: ShapeModel;
+  itemData!: IShape;
   editName = false;
 
   created(): void {
@@ -55,25 +55,25 @@ export default class ObjectItem extends mixins(GraphxMixin) {
   get shapeIcon(): string {
     if (this.itemData.type == ShapeInput.RECTANGLE)
       return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-					shape-rendering="crispEdges" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-						<rect x="4" y="4" width="18" height="18"></rect>
-					</svg>`;
+						shape-rendering="crispEdges" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+							<rect x="4" y="4" width="18" height="18"></rect>
+						</svg>`;
     if (this.itemData.type == ShapeInput.LINE)
       return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke-width="1"
-						stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision">
-						<line x1="4" y1="4" x2="20" y2="20"></line> 
-					</svg>`;
+							stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision">
+							<line x1="4" y1="4" x2="20" y2="20"></line>
+						</svg>`;
     if (this.itemData.type == ShapeInput.ELLIPSE)
       return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke-width="1"
-						stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision">
-						<circle cx="12" cy="12" r="9"></circle>
-					</svg>`;
+							stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision">
+							<circle cx="12" cy="12" r="9"></circle>
+						</svg>`;
     if (this.itemData.type == ShapeInput.POLYGON)
       return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke-width="1"
-						stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-						<polygon points="12,4 4,20 20,20"></polygon>
-						</path>
-					</svg>`;
+							stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+							<polygon points="12,4 4,20 20,20"></polygon>
+							</path>
+						</svg>`;
     return "";
   }
 

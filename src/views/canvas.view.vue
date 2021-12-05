@@ -30,6 +30,7 @@ import { GraphxMixin } from "@/common/mixins/graphx.mixin";
 import { mixins, Options } from "vue-class-component";
 import ShapeInputTool from "./canvas/components/shape-input-tool.vue";
 import SelectionTool from "./canvas/components/select-tool.component.vue";
+import KeyboardController from "@/controllers/keyboard.controller";
 
 @Options({
   name: "CanvasView",
@@ -41,6 +42,8 @@ export default class CanvasView extends mixins(GraphxMixin) {
 
   shapeInputTool!: ShapeInputTool;
   selectionTool!: SelectionTool;
+
+  keyboardController = new KeyboardController();
 
   // mousePos = setup(() => {
   // 	const { x, y } = useMouse();
