@@ -29,6 +29,19 @@ export default class Polygon extends BaseShape implements IShape {
     };
   }
 
+  get outline(): string {
+    return `<ellipse cx="${0} cy="${0}" rx="${10}" ry="${10}" stroke-width="1" stroke="#09f" fill="none"></ellipse>`;
+  }
+
+  async drawTo(pos: { x: number; y: number }) {
+    // const position   = {
+    // 	x1: Math.min(this.origin!.x, pos.x),
+    // 	y1: Math.min(this.origin!.y, pos.y),
+    // 	x2: Math.max(pos.x, this.origin!.x),
+    // 	y2: Math.max(pos.y, this.origin!.y),
+    // };
+  }
+
   dragTo(pos: { x: number; y: number }) {
     this.position.forEach((p, i) => {
       p[0] = this.origin[i][0] + pos.x;

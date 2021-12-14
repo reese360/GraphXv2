@@ -13,24 +13,13 @@
     />
 
     <!-- INNER SELECTION BOXES -->
-    <rect
-      v-for="(shape, idx) in shapes"
-      :key="idx"
-      :x="shape.x1"
-      :y="shape.y1"
-      :width="shape.x2"
-      :height="shape.y2"
-      stroke-width="1"
-      stroke="#09f"
-      fill="none"
-    />
     <!-- <rect
-			v-for="(outline, idx) in shapeOutlines"
+			v-for="(shape, idx) in shapeBounds"
 			:key="idx"
-			:x="outline.x1"
-			:y="outline.y1"
-			:width="outline.x2"
-			:height="outline.y2"
+			:x="shape.x1"
+			:y="shape.y1"
+			:width="shape.x2"
+			:height="shape.y2"
 			stroke-width="1"
 			stroke="#09f"
 			fill="none"
@@ -46,6 +35,7 @@
       stroke="#09f"
       fill="none"
     />
+    <g v-for="(o, idx) in shapeOutlines" :key="idx" v-html="o"> </g>
   </g>
 </template>
 
@@ -101,8 +91,12 @@ export default class SelectionTool extends mixins(GraphxMixin) {
     return null;
   }
 
-  get shapes(): ShapePosition[] {
+  get shapeBounds(): ShapePosition[] {
     return Array.from(this.selectedShapes, ([k, v]) => v.bounds);
+  }
+
+  get shapeOutlines(): string[] {
+    return Array.from(this.selectedShapes, ([k, v]) => v.outline);
   }
 
   created(): void {

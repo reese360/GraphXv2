@@ -3,6 +3,8 @@
     class="object-item-btn flex-row"
     @click.stop="onSingleClick($event)"
     @dblclick="onDoubleClick()"
+    @mouseenter="onMouseEnter()"
+    @mouseleave="onMouseLeave()"
     :class="{ selected: itemData.selected }"
   >
     <i v-html="shapeIcon" :title="itemData.type" />
@@ -75,6 +77,13 @@ export default class ObjectItem extends mixins(GraphxMixin) {
 							</path>
 						</svg>`;
     return "";
+  }
+
+  onMouseEnter() {
+    // this.itemData.selected = false;
+  }
+  onMouseLeave() {
+    // this.itemData.selected = false;
   }
 
   onSingleClick(e: PointerEvent): void {

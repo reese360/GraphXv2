@@ -28,17 +28,31 @@
       </i>
       <span>Properties</span>
     </div>
+    <div class="properties-view">
+      <span
+        >Stroke Width&nbsp;<input type="number" v-model="strokeWidth"
+      /></span>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { GraphxMixin } from "@/common/mixins/graphx.mixin";
+import { mixins, Options, Vue } from "vue-class-component";
 
 @Options({
   name: "PropertiesView",
   components: {},
 })
-export default class PropertiesView extends Vue {}
+export default class PropertiesView extends mixins(GraphxMixin) {
+  get strokeWidth() {
+    return this.activeStrokeWidth;
+  }
+
+  set strokeWidth(s: number) {
+    this.updateStrokeWidth(Number(s));
+  }
+}
 </script>
 
 <style scoped lang="scss">

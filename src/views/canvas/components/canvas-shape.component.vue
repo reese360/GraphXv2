@@ -77,11 +77,11 @@ export default class CanvasShape extends mixins(GraphxMixin) {
 
   mounted(): void {
     this.shape.element = this.$el;
-    if (this.activeTool == ToolInput.SHAPE)
-      eventBus.emit(BusEvent.SELECT, {
-        id: this.shape.id,
-        multiSelect: false,
-      });
+    // if (this.activeTool == ToolInput.SHAPE)
+    // 	eventBus.emit(BusEvent.SELECT, {
+    // 		id: this.shape.id,
+    // 		multiSelect: false,
+    // 	});
   }
 }
 </script>

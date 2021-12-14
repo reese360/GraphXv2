@@ -27,6 +27,19 @@ export default class Line extends BaseShape implements IShape {
     };
   }
 
+  get outline(): string {
+    return `<ellipse cx="${0} cy="${0}" rx="${10}" ry="${10}" stroke-width="1" stroke="#09f" fill="none"></ellipse>`;
+  }
+
+  async drawTo(pos: { x: number; y: number }) {
+    this.position = {
+      x1: this.origin!.x,
+      y1: this.origin!.y,
+      x2: pos.x,
+      y2: pos.y,
+    };
+  }
+
   dragTo(pos: { x: number; y: number }) {
     this.position.x1 = this.origin.x + pos.x;
     this.position.y1 = this.origin.y + pos.y;

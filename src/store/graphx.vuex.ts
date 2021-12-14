@@ -11,7 +11,6 @@ class GraphxModule extends VuexModule {
   private _activeStrokeColor = "#000";
   private _activeStrokeWidth = 1;
   private _activeFillColor = "#c3f";
-
   private _shapeCollection: Map<string, IShape> = new Map<string, IShape>();
 
   get selectedShape(): ShapeInput {
@@ -40,20 +39,37 @@ class GraphxModule extends VuexModule {
 
   init(): void {
     this.addShape(
-      new Polygon({
-        name: "Polygon-0",
-        position: [
-          [669, 44],
-          [558, 256],
-          [781, 256],
-        ],
+      new Ellipse({
+        name: "Ellipse-0",
+        position: {
+          x1: 200,
+          y1: 200,
+          x2: 100,
+          y2: 100,
+        },
         properties: {
           strokeWidth: 2,
-          fill: "#09f",
+          fill: "#3ac",
           stroke: "#000",
         },
       })
     );
+
+    // this.addShape(
+    // 	new Polygon({
+    // 		name: 'Polygon-0',
+    // 		position: [
+    // 			[669, 44],
+    // 			[558, 256],
+    // 			[781, 256],
+    // 		],
+    // 		properties: {
+    // 			strokeWidth: 2,
+    // 			fill: '#09f',
+    // 			stroke: '#000',
+    // 		},
+    // 	})
+    // );
   }
 
   @Action updateShape(s: ShapeInput) {
@@ -91,4 +107,5 @@ class GraphxModule extends VuexModule {
 
 import store from "./index";
 import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
+import Ellipse from "@/common/models/shapes/ellipse.shape";
 export const graphxModule = new GraphxModule({ store, name: "graphx" });

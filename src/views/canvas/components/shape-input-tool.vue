@@ -62,13 +62,22 @@ export default class ShapeInputTool extends mixins(GraphxMixin) {
   private origin: { x: number; y: number } | null = null;
   private shapePosition: ShapePosition | null = null;
   private polygonPoints: [number, number][] = [];
-  private areaLimit = 20; // used to filter accidental shapes
+  private areaLimit = 20; // used to filter small/accidental shapes
   public isDrawing = false;
 
   ShapeInput = ShapeInput;
 
   get renderTool(): boolean {
     return !!this.origin && !!this.shapePosition;
+  }
+
+  get finalShapePosition(): ShapePosition {
+    return {
+      x1: this.shapePosition!.x1 + Math.ceil(this.activeStrokeWidth / 2),
+      y1: this.shapePosition!.y1 + Math.ceil(this.activeStrokeWidth / 2),
+      x2: this.shapePosition!.x2 - Math.ceil(this.activeStrokeWidth),
+      y2: this.shapePosition!.y2 - Math.ceil(this.activeStrokeWidth),
+    };
   }
 
   get polyPoints(): string {
@@ -174,7 +183,7 @@ export default class ShapeInputTool extends mixins(GraphxMixin) {
           position:
             this.selectedShape == ShapeInput.POLYGON
               ? this.polygonPoints
-              : this.shapePosition!,
+              : this.shapePosition,
           properties: {
             strokeWidth: this.activeStrokeWidth,
             fill: this.activeFillColor,

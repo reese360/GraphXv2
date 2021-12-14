@@ -24,6 +24,19 @@ export default class Rectangle extends BaseShape implements IShape {
     };
   }
 
+  get outline(): string {
+    return `<ellipse cx="${0} cy="${0}" rx="${10}" ry="${10}" stroke-width="1" stroke="#09f" fill="none"></ellipse>`;
+  }
+
+  async drawTo(pos: { x: number; y: number }) {
+    this.position = {
+      x1: Math.min(this.origin!.x, pos.x),
+      y1: Math.min(this.origin!.y, pos.y),
+      x2: Math.abs(pos.x - this.origin!.x),
+      y2: Math.abs(pos.y - this.origin!.y),
+    };
+  }
+
   dragTo(pos: { x: number; y: number }) {
     this.position.x1 = this.origin.x + pos.x;
     this.position.y1 = this.origin.y + pos.y;

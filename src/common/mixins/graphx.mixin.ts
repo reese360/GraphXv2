@@ -39,6 +39,10 @@ export class GraphxMixin extends Vue {
     graphxModule.updateTool(t);
   }
 
+  async updateStrokeWidth(s: number): Promise<void> {
+    graphxModule.updateStrokeWidth(s);
+  }
+
   addShape(shape: IShape): void {
     graphxModule.addShape(shape);
   }

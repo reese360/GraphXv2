@@ -10,7 +10,9 @@ export interface IShape {
   selected: boolean;
   properties?: ShapeProperties;
   element?: HTMLElement;
+  drawTo: (pos: { x: number; y: number }) => void;
   dragTo: (pos: { x: number; y: number }) => void;
   endDrag: () => void;
   bounds: ShapePosition;
+  outline: string;
 }
