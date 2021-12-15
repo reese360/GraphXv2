@@ -30,7 +30,7 @@ export default class Polygon extends BaseShape implements IShape {
   }
 
   get outline(): string {
-    return `<ellipse cx="${0} cy="${0}" rx="${10}" ry="${10}" stroke-width="1" stroke="#09f" fill="none"></ellipse>`;
+    return `<polygon points="${this.position.join()}"stroke-width="1" stroke="#09f" fill="none"></polygon>`;
   }
 
   async drawTo(pos: { x: number; y: number }) {

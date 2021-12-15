@@ -183,3 +183,8 @@ input {
 .outline {
 	@include outline;
 }
+
+.selected-shape {
+	cursor: move;
+	// pointer-events: none;
+}

@@ -40,7 +40,9 @@ export default class Ellipse extends BaseShape implements IShape {
       this.bounds.x1
     }" y="${this.bounds.y1}" width="${this.bounds.x2}" height="${
       this.bounds.y2
-    }" stroke-width="1" stroke="#09f" fill="none"></rect>`;
+    }" stroke-width="1" stroke="#09f" fill="#00000000" class="selected-shape" id="${
+      this.id
+    }"></rect>`;
   }
 
   async drawTo(pos: { x: number; y: number }) {

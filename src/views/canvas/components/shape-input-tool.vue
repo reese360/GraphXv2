@@ -1,42 +1,43 @@
 <template>
-  <rect
-    v-if="renderTool && selectedShape == ShapeInput.RECTANGLE"
-    :x="shapePosition.x1"
-    :y="shapePosition.y1"
-    :width="shapePosition.x2"
-    :height="shapePosition.y2"
-    stroke-width="1"
-    stroke="#09f"
-    fill="none"
-  />
-  <ellipse
-    v-else-if="renderTool && selectedShape == ShapeInput.ELLIPSE"
-    :cx="shapePosition.x1"
-    :cy="shapePosition.y1"
-    :rx="shapePosition.x2"
-    :ry="shapePosition.y2"
-    stroke="#09f"
-    stroke-width="1"
-    fill="none"
-    style="outline: 1px solid #09f"
-  />
-  <line
-    v-else-if="renderTool && selectedShape == ShapeInput.LINE"
-    :x1="shapePosition.x1"
-    :y1="shapePosition.y1"
-    :x2="shapePosition.x2"
-    :y2="shapePosition.y2"
-    stroke="#09f"
-    stroke-width="1"
-  />
-  <polygon
-    v-else-if="renderTool && selectedShape == ShapeInput.POLYGON"
-    stroke="#09f"
-    fill="none"
-    stroke-width="1"
-    :points="polyPoints"
-    style="outline: 1px solid #09f"
-  />
+  <g>
+    <rect
+      v-if="renderTool"
+      :x="rectPosition.x1"
+      :y="rectPosition.y1"
+      :width="rectPosition.x2"
+      :height="rectPosition.y2"
+      stroke-width="1"
+      stroke="#09f"
+      fill="none"
+    />
+    <ellipse
+      v-if="renderTool && selectedShape == ShapeInput.ELLIPSE"
+      :cx="shapePosition.x1"
+      :cy="shapePosition.y1"
+      :rx="shapePosition.x2"
+      :ry="shapePosition.y2"
+      stroke="#09f"
+      stroke-width="1"
+      fill="none"
+    />
+    <line
+      v-else-if="renderTool && selectedShape == ShapeInput.LINE"
+      :x1="shapePosition.x1"
+      :y1="shapePosition.y1"
+      :x2="shapePosition.x2"
+      :y2="shapePosition.y2"
+      stroke="#09f"
+      stroke-width="1"
+    />
+    <polygon
+      v-else-if="renderTool && selectedShape == ShapeInput.POLYGON"
+      stroke="#09f"
+      fill="none"
+      stroke-width="1"
+      :points="polyPoints"
+      style="outline: 1px solid #09f"
+    />
+  </g>
 </template>
 
 <script lang="ts">
@@ -61,6 +62,7 @@ import { BusEvent } from "@/common/constants/enums/BusEvent.enum";
 export default class ShapeInputTool extends mixins(GraphxMixin) {
   private origin: { x: number; y: number } | null = null;
   private shapePosition: ShapePosition | null = null;
+  private rectPosition: ShapePosition | null = null;
   private polygonPoints: [number, number][] = [];
   private areaLimit = 20; // used to filter small/accidental shapes
   public isDrawing = false;
@@ -114,14 +116,22 @@ export default class ShapeInputTool extends mixins(GraphxMixin) {
 
   drawTo(pos: { x: number; y: number }, ratio: boolean): void {
     if (this.isDrawing) {
+      this.rectPosition = {
+        x1: Math.min(this.origin!.x, pos.x),
+        y1: Math.min(this.origin!.y, pos.y),
+        x2: Math.abs(pos.x - this.origin!.x),
+        y2: Math.abs(pos.y - this.origin!.y),
+      };
+
       switch (this.selectedShape) {
         case ShapeInput.RECTANGLE: {
-          this.shapePosition = {
-            x1: Math.min(this.origin!.x, pos.x),
-            y1: Math.min(this.origin!.y, pos.y),
-            x2: Math.abs(pos.x - this.origin!.x),
-            y2: Math.abs(pos.y - this.origin!.y),
-          };
+          // this.shapePosition = {
+          // 	x1: Math.min(this.origin!.x, pos.x),
+          // 	y1: Math.min(this.origin!.y, pos.y),
+          // 	x2: Math.abs(pos.x - this.origin!.x),
+          // 	y2: Math.abs(pos.y - this.origin!.y),
+          // };
+          this.shapePosition = this.rectPosition;
           break;
         }
         case ShapeInput.LINE: {
@@ -160,20 +170,6 @@ export default class ShapeInputTool extends mixins(GraphxMixin) {
     }
   }
 
-  cancelDraw(): void {
-    this.isDrawing = false;
-    this.origin = null;
-    this.shapePosition = null;
-  }
-
-  newShape(shapeData: ShapeData): IShape {
-    if (this.selectedShape == ShapeInput.RECTANGLE)
-      return new Rectangle(shapeData);
-    if (this.selectedShape == ShapeInput.ELLIPSE) return new Ellipse(shapeData);
-    if (this.selectedShape == ShapeInput.LINE) return new Line(shapeData);
-    else return new Polygon(shapeData);
-  }
-
   endDraw(): void {
     if (this.isDrawing) {
       if (this.shapePosition && this.calcShapeArea() >= this.areaLimit) {
@@ -202,6 +198,20 @@ export default class ShapeInputTool extends mixins(GraphxMixin) {
     this.origin = null;
     this.shapePosition = null;
     this.isDrawing = false;
+  }
+
+  cancelDraw(): void {
+    this.isDrawing = false;
+    this.origin = null;
+    this.shapePosition = null;
+  }
+
+  newShape(shapeData: ShapeData): IShape {
+    if (this.selectedShape == ShapeInput.RECTANGLE)
+      return new Rectangle(shapeData);
+    if (this.selectedShape == ShapeInput.ELLIPSE) return new Ellipse(shapeData);
+    if (this.selectedShape == ShapeInput.LINE) return new Line(shapeData);
+    else return new Polygon(shapeData);
   }
 }
 </script>

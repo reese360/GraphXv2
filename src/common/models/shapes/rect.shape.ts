@@ -25,7 +25,7 @@ export default class Rectangle extends BaseShape implements IShape {
   }
 
   get outline(): string {
-    return `<ellipse cx="${0} cy="${0}" rx="${10}" ry="${10}" stroke-width="1" stroke="#09f" fill="none"></ellipse>`;
+    return `<rect x="${this.bounds.x1}" y="${this.bounds.y1}" width="${this.bounds.x2}" height="${this.bounds.y2}" stroke-width="1" stroke="#09f"  fill="#00000000" class="selected-shape" id="${this.id}"></rect>`;
   }
 
   async drawTo(pos: { x: number; y: number }) {

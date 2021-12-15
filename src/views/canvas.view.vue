@@ -84,6 +84,7 @@ export default class CanvasView extends mixins(GraphxMixin) {
 
     if (this.activeTool == ToolInput.SELECT) {
       const targetId = (e.target as HTMLElement).getAttribute("id");
+      console.log(e.target);
       this.selectionTool.onToolDown(targetId, this.trackMouse(e), e.shiftKey);
     }
   }
